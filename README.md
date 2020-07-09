@@ -1,6 +1,6 @@
 # Civ6Drafter
 Drafter for Civ 6
-This Drafter allows you to draft nations for civ6.
+This Drafter allows you to draft nations for civ6. It's VBA code so you can copy&paste
 
 FAQ:
 
