@@ -1,0 +1,101 @@
+Sub zufallszahl()
+
+Dim Counter As Integer
+Dim Counter2 As Integer
+Dim RandomSort As Integer
+Dim RandNumber As Integer
+Dim NumberOfPlayers As Integer
+Dim PlayerNumber As Integer
+Dim PlayerNumberCounter(15) As Integer
+Dim NumberOfCivs As Integer
+Dim LeftOverCivs As Integer
+
+Counter = 0
+Counter2 = 0
+RandomSort = 0
+
+ScreenUpdating = False
+
+'How many civs total//Number of players//assigned per player//left over after sorting
+NumberOfCivs = WorksheetFunction.CountA(Worksheets("ListOfCivs").Columns(1))
+NumberOfPlayers = Worksheets("InputOutput").Cells(3, 3)
+LeftOverCivs = NumberOfCivs Mod NumberOfPlayers
+MaxCivs = NumberOfCivs / NumberOfPlayers
+MaxCivsRnd = WorksheetFunction.RoundDown(MaxCivs, 0)
+
+
+
+'delete previous results
+Worksheets("ListOfCivs").Columns(3).EntireColumn.Delete
+Worksheets("ListOfCivs").Columns(2).EntireColumn.Delete
+Worksheets("InputOutput").Range("E4:Z100").ClearContents
+
+'Shuffle data
+
+'activate correct sheet (sorting did not work without this and sorted the wrong page :/ )
+Sheets("ListOfCivs").Activate
+While RandomSort < NumberOfCivs + 1
+    'Random Number
+    RandNumber = Int((NumberOfCivs * Rnd) + 1)
+    Worksheets("ListOfCivs").Cells(RandomSort + 1, 3) = RandNumber
+    RandomSort = RandomSort + 1
+    
+    'Sort by Number
+    Worksheets("ListOfCivs").Range("C1") = "Index"
+    Columns("A:C").Sort key1:=Range("C1"), _
+        order1:=xlAscending, Header:=xlYes
+    
+Wend
+
+'assign playernumber to each civ
+Do While Counter < NumberOfCivs - LeftOverCivs + 1
+    'emergeny stop
+    Counter2 = Counter2 + 1
+    If Counter2 > 1000 Then
+        Exit Do
+    End If
+    
+    'random number generation
+    PlayerNumber = Int((NumberOfPlayers * Rnd) + 1)
+        
+    'Print random number only if player does not have more than allowed civs assigned
+    If PlayerNumberCounter(PlayerNumber) < MaxCivsRnd Then
+        Worksheets("ListOfCivs").Cells(Counter + 2, 2) = PlayerNumber
+        PlayerNumberCounter(PlayerNumber) = PlayerNumberCounter(PlayerNumber) + 1
+        Counter = Counter + 1
+    End If
+
+Loop
+
+Dim PlayerNumberCiv As Integer
+Dim PrintPlayerCounter As Integer
+Dim CivTargetRow As Integer
+Dim CivTargetColumn As Integer
+
+CivTargetColumn = 5
+CivTargetRow = 4
+PrintPlayerCounter = 1
+
+'Loop over each player
+While PrintPlayerCounter < NumberOfPlayers + 1
+    
+    'Loop over each cell and check if cell matches player
+    While SelectCivCounter < NumberOfCivs
+        If Worksheets("ListOfCivs").Cells(SelectCivCounter + 2, 2) = PrintPlayerCounter Then
+            Worksheets("InputOutput").Cells(CivTargetRow, CivTargetColumn) = Worksheets("ListOfCivs").Cells(SelectCivCounter + 2, 1)
+            CivTargetRow = CivTargetRow + 1
+        End If
+    SelectCivCounter = SelectCivCounter + 1
+    Wend
+    
+    CivTargetColumn = CivTargetColumn + 1
+    CivTargetRow = 4
+    PrintPlayerCounter = PrintPlayerCounter + 1
+    SelectCivCounter = 0
+Wend
+
+Sheets("InputOutput").Activate
+
+End Sub
+
+
